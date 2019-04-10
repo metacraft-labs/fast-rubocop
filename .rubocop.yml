@@ -1,0 +1,83 @@
+# Common configuration.
+
+AllCops:
+  RubyInterpreters:
+    - ruby
+  # Include common Ruby source files.
+  Include:
+    - '**/*.rb'
+  # Default formatter will be used if no `-f/--format` option is given.
+  DefaultFormatter: progress
+  # Cop names are displayed in offense messages by default. Change behavior
+  # by overriding DisplayCopNames, or by giving the `--no-display-cop-names`
+  # option.
+  DisplayCopNames: true
+  # Style guide URLs are not displayed in offense messages by default. Change
+  # behavior by overriding `DisplayStyleGuide`, or by giving the
+  # `-S/--display-style-guide` option.
+  DisplayStyleGuide: false
+  # When specifying style guide URLs, any paths and/or fragments will be
+  # evaluated relative to the base URL.
+  StyleGuideBaseURL: https://github.com/rubocop-hq/ruby-style-guide
+  # Extra details are not displayed in offense messages by default. Change
+  # behavior by overriding ExtraDetails, or by giving the
+  # `-E/--extra-details` option.
+  ExtraDetails: false
+
+## Style
+
+Style/CaseEquality:
+  Description: 'Avoid explicit use of the case equality operator(===).'
+  StyleGuide: '#no-case-equality'
+  Enabled: true
+  VersionAdded: '0.9'
+
+Style/BeginBlock:
+  Description: 'Avoid the use of BEGIN blocks.'
+  StyleGuide: '#no-BEGIN-blocks'
+  Enabled: false
+  VersionAdded: '0.9'
+
+## Naming
+
+Naming/VariableName:
+  Description: 'Use the configured style when naming variables.'
+  StyleGuide: '#snake-case-symbols-methods-vars'
+  Enabled: true
+  VersionAdded: '0.50'
+  EnforcedStyle: snake_case
+  SupportedStyles:
+    - snake_case
+    - camelCase
+
+## Metrics
+
+Metrics/MethodLength:
+  Description: 'Avoid methods longer than 10 lines of code.'
+  StyleGuide: '#short-methods'
+  Enabled: true
+  VersionAdded: '0.25'
+  VersionChanged: '0.59.2'
+  CountComments: false  # count full line comments?
+  Max: 10
+  ExcludedMethods: []
+
+
+## Lint
+
+Lint/BooleanSymbol:
+  Description: 'Check for `:true` and `:false` symbols.'
+  Enabled: true
+  VersionAdded: '0.50'
+
+Lint/CircularArgumentReference:
+  Description: "Default values in optional keyword arguments and optional ordinal arguments should not refer back to the name of the argument."
+  Enabled: true
+  VersionAdded: '0.33'
+
+Naming/AccessorMethodName:
+  Description: Check the naming of accessor methods for get_/set_.
+  StyleGuide: '#accessor_mutator_method_names'
+  Enabled: true
+  VersionAdded: '0.50'
+

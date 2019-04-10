@@ -7,8 +7,6 @@
 # Notes:
 # all generated files should go inside `build/`
 # use absolute paths to refer to a path assumed to be at a fixed level in the hierarchy
-/build
-
 
 nimcache
 
@@ -17,3 +15,8 @@ nimcache
 *.exe
 *.swp
 
+*_spec*.rb
+*.json
+c
+*_spec
+checker

@@ -1,72 +1,147 @@
-[![Chat on Gitter](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/nimterop/Lobby)
-[![Build status](https://ci.appveyor.com/api/projects/status/hol1yvqbp6hq4ao8/branch/master?svg=true)](https://ci.appveyor.com/project/genotrance/nimterop-8jcj7/branch/master)
-[![Build Status](https://travis-ci.org/nimterop/nimterop.svg?branch=master)](https://travis-ci.org/nimterop/nimterop)
+# fast-rubocop
 
-Detailed documentation [here](https://nimterop.github.io/nimterop/theindex.html).
+A linter for Ruby based on semi-automated translation of [rubocop](https://github.com/rubocop-hq/rubocop/).
 
-Nimterop is a [Nim](https://nim-lang.org/) package that aims to make C/C++ interop seamless
+## Why
 
-Nim has one of the best FFI you can find - importing C/C++ is supported out of the box. All you need to provide is type and proc definitions for Nim to interop with C/C++ binaries. Generation of these wrappers is easy for simple libraries but quickly gets out of hand. [c2nim](https://github.com/nim-lang/c2nim) greatly helps here by parsing and converting C/C++ into Nim but is limited due to the complex and constantly evolving C/C++ grammar. [nimgen](https://github.com/genotrance/nimgen) mainly focuses on automating the wrapping process and fills some holes but is again limited to c2nim's capabilities.
+It's a prototype used to demonstrate [languist](https://githib.com/metacraft-labs/languist)
 
-The goal of nimterop is to leverage the [tree-sitter](http://tree-sitter.github.io/tree-sitter/) engine to parse C/C++ code and then convert relevant portions of the AST into Nim definitions. [tree-sitter](https://github.com/tree-sitter) is a Github sponsored project that can parse a variety of languages into an AST which is then leveraged by the [Atom](https://atom.io/) editor for syntax highlighting and code folding. The advantages of this approach are multifold:
-- Benefit from the tree-sitter community's investment into language parsing
-- Avoid depending on Nim compiler API which is evolving constantly and makes backwards compatibility a bit challenging
+* We used treesitter and a custom adapter to replace the usage of the `parser` gem
+* We ported manually some basic parts of the infrastructure/testing code/mixins
+* We translate automatically the actual cops to Nim
 
-Most of the functionality is contained within the `toast` binary that is built when nimterop is installed and can be used standalone similar to how c2nim can be used today. In addition, nimterop also offers an API to pull in the generated Nim content directly into an application.
+## Credits
 
-The nimterop feature set is still limited to C but is expanding rapidly. C++ support will be added once most popular C libraries can be wrapped seamlessly.
+* the project is based on the great work on rubocop by the author Bozhidar Batsov and all core developers and contributors: [rubocop](https://github.com/rubocop-hq/rubocop/)
 
-Given the simplicity and success of this approach so far, it seems feasible to continue on for more complex code. The goal is to make interop seamless so nimterop will focus on wrapping headers and not the outright conversion of C/C++ implementation.
+* nim-rubocop is technically a fork of [nimterop](https://github.com/nimterop/nimterop): huge credit is due to [genotrance](https://github.com/genotrance) for nimterop and the tree-sitter nim wrappers, also to the tree-sitter project. Nimterop helped incredibly for getting treesitter/the project working quickly! 
+  
+  Credit is due to [timotheecour](https://github.com/timotheecour) as well, for his contributions to nimterop included here
 
-__Installation__
 
-Nimterop can be installed via [Nimble](https://github.com/nim-lang/nimble):
+## Build
 
-```bash
-nimble install nimterop -y
+* install [nim](https://github.com/nim-lang/Nim)
+* clone this repo
+* run `nim c -d:release checker.nim`
+* `./checker <path>` now should act similarly to rubocop (you can put it somewhere in path)
+
+## Example cop
+
+
+```ruby
+# frozen_string_literal: true
+
+module RuboCop
+  module Cop
+    module Lint
+      ## Docs
+      class CircularArgumentReference < Cop
+        MSG = 'Circular argument reference - `%<arg_name>s`.'.freeze
+
+        def on_kwoptarg(node)
+          check_for_circular_argument_references(*node)
+        end
+
+        def on_optarg(node)
+          check_for_circular_argument_references(*node)
+        end
+
+        private
+
+        def check_for_circular_argument_references(arg_name, arg_value)
+          return unless arg_value.lvar_type?
+          return unless arg_value.to_a == [arg_name]
+
+          add_offense(arg_value, message: format(MSG, arg_name: arg_name))
+        end
+      end
+    end
+  end
+end
 ```
-or:
-```bash
-git clone http://github.com/nimterop/nimterop && cd nimterop
-nimble develop -y
-nimble build
-```
 
-This will download and install nimterop in the standard Nimble package location, typically `~/.nimble`. Once installed, it can be imported into any Nim program. Note that the `~/.nimble/bin` directory needs to be added to the `PATH` for nimterop to work.
-
-__Usage__
+is converted to
 
 ```nim
-import nimterop/cimport
+import
+  types
 
-static:
-  cDebug()
-cDefine("HAS_ABC")
-cDefine("HAS_ABC", "DEF")
-cIncludeDir("clib/include")
-cImport("clib.h")
+cop CircularArgumentReference:
+  ## Docs
 
-cCompile("clib/src/*.c")
+  const
+    MSG = "Circular argument reference - `%<arg_name>s`."
+
+  method onKwoptarg*(self; node) =
+    self.checkForCircularArgumentReferences(node[0], node[1])
+
+
+  method onOptarg*(self; node) =
+    self.checkForCircularArgumentReferences(node[0], node[1])
+
+
+  method checkForCircularArgumentReferences*(self; argName: Symbol; argValue: Node) =
+    if not argValue.isLvarType:
+      return
+    if not (argValue.toSeq() == @[argName]):
+      return
+    addOffense(argValue, message = format(MSG, argName = argName))
 ```
 
-Refer to the ```tests``` directory for examples on how the library can be used.
+## Performance
 
-The `toast` binary can also be used directly on the CLI. The `--help` flag provides more details.
+We target 5-10x performance increase.
+Initial benchmarks running rubocop and fast-rubocop with mostly equivalent configs(with only several cops) on some of the rubocop source
+show fast-rubocop being around 2x-10x faster:
 
-__Implementation Details__
+Nim program is built with
+`nim -d:release c checker.nim`
 
-In order to use the tree-sitter C library, it has to be compiled into a separate binary called `toast` (to AST) since the Nim VM doesn't yet support FFI. `toast` takes a C/C++ file and runs it through the tree-sitter API which returns an AST data structure. This can then be printed out to stdout in a Lisp S-Expression format or the relevant Nim wrapper output. This content can be saved to a `.nim` file and imported if so desired.
+Rubocop is used with `--cache false` as we want to find raw speeds and with manual benchmarking code inserted to count only from the start of actual linting: the code is in [rubocop](https://github.com/metacraft-labs/rubocop#port)
 
-Alternatively, the `cImport()` macro allows easier creation of wrappers in code. It runs `toast` on the specified header file and injects the generated wrapper content into the application at compile time. A few other helper procs are provided to influence this process.
+**Keep in mind**: we are still only running benchmarks with small number of cops and in an uncontrolled environment, so benchmarks results might not be representative enough. Note: even if some cops still behave incorrectly in the Nim translation, their speed should be still similar.
 
-`toast` can also be used to run the header through the preprocessor which cleans up the code considerably. Along with the recursion capability which runs through all #include files, one large simpler header file can be created which can then be processed with c2nim if so desired.
+project | rubocop|fast-rubocop
+--------|--------|------------
+line_length.rb | 49ms | 19ms
+metrics (11 files) | 94 ms | 29 ms
+rubocop(1187 files) | 16.540 s | 1.396 s
 
-The tree-sitter library is limited as well - it may fail on some advanced language constructs but is designed to handle them gracefully since it is expected to have bad code while actively typing in an editor. When an error is detected, tree-sitter includes an ERROR node at that location in the AST. At this time, `cImport()` will complain and continue if it encounters any errors. Depending on how severe the errors are, compilation may succeed or fail. Glaring issues will be communicated to the tree-sitter team but their goals may not always align with those of this project.
+## Caution
 
-__Credits__
+This is still a research project: it depends on languist progress and the tools we use might still change
+significantly: the interlang api, rewrites and translations are not stable yet.
+Fast-rubocop itself is still not stable, but if there is enough interest, and if enough cops are succesfully annotated/translated, it might be maintained as an alternative linter, as we plan to be able to translate new commits.
 
-Nimterop depends on [tree-sitter](http://tree-sitter.github.io/tree-sitter/) and all licensing terms of [tree-sitter](https://github.com/tree-sitter/tree-sitter/blob/master/LICENSE) apply to the usage of this package. Interestingly, the tree-sitter functionality is [wrapped](https://github.com/genotrance/nimtreesitter) using c2nim and nimgen at this time. Depending on the success of this project, those could perhaps be bootstrapped using nimterop eventually.
+Currently we have automatically translated correctly enough for our goals 6 cops residing in subfolders of `cops`.
+We also translated most of the cops in less correct way which would still require manual fixes: the quality of those translations should hopefully improve.
 
-__Feedback__
+## Translate with ruby2nim
 
-Nimterop is a work in progress and any feedback or suggestions are welcome. It is hosted on [GitHub](https://github.com/nimterop/nimterop) with an MIT license so issues, forks and PRs are most appreciated.
+* install [ruby2nim](https://github.com/metacraft-labs/ruby2nim)
+* use langcop to translate parts of rubocop based on args and env vars
+
+## Langcop
+
+it is a script helping to translate portions of rubocop
+
+you can run `./langcop_all` to translate the currently correctly translatable modules
+
+
+## Tree-sitter
+
+we adapt tree-sitter because rubocop heavily depends on parser's format. We currently compile treesitter's AST to an AST mostly compatible with `parser`'s API, however there are still some edge cases and nodes which are not handled correctly, so this is a work in progress.
+Another option is to port `parser` itself to Nim/C++, but this is out of scope.
+
+## LICENSE
+
+fast-rubocop is a derivative work based on [rubocop](https://github.com/rubocop-hq/rubocop/). which seems to use the MIT License as well: credits for the original 
+tool to its author Bozhidar Batsov and all core developers and contributors: [rubocop](https://github.com/rubocop-hq/rubocop/)
+
+fast-rubocop is a fork of [nimterop](https://github.com/nimterop/nimterop) which also uses the MIT License.
+
+The MIT License (MIT)
+
+Copyright (c) 2019 Zahary Karadjov, Alexander Ivanov
+
