@@ -4,7 +4,7 @@ A linter for Ruby based on semi-automated translation of [rubocop](https://githu
 
 ## Why
 
-It's a prototype used to demonstrate [languist](https://githib.com/metacraft-labs/languist)
+It's a prototype used to demonstrate [languist](https://github.com/metacraft-labs/languist)
 
 * We used treesitter and a custom adapter to replace the usage of the `parser` gem
 * We ported manually some basic parts of the infrastructure/testing code/mixins
