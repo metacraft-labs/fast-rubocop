@@ -34,3 +34,6 @@ end
 
 # rubocop example
 BEGIN { test }
+
+# rubocop example
+Foo.send(:bar)

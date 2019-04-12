@@ -1,12 +1,15 @@
 
 import
+  types
+
+import
   single_line_methods, test_tools
 
 suite "SingleLineMethods":
   var cop = SingleLineMethods()
-  let("config", proc (): void =
-    Config.new())
-  let("cop_config", proc (): void =
+  let("config", proc (): Config =
+    initConfig())
+  let("cop_config", proc (): Table[string, bool] =
     {"AllowIfMethodIsEmpty": true}.newTable())
   test "registers an offense for a single-line method":
     expectOffense("""      def some_method; body end
@@ -16,8 +19,8 @@ suite "SingleLineMethods":
       def @table.columns; super; end
       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Avoid single-line method definitions.
 """.stripIndent)
-  context("when AllowIfMethodIsEmpty is disabled", proc (): void =
-    let("cop_config", proc (): void =
+  context("when AllowIfMethodIsEmpty is disabled", proc () =
+    let("cop_config", proc (): Table[string, bool] =
       {"AllowIfMethodIsEmpty": false}.newTable())
     test "registers an offense for an empty method":
       expectOffense("""        def no_op; end
@@ -32,8 +35,8 @@ suite "SingleLineMethods":
       expect(corrected).to(eq("""        def x; 
         end
 """.stripIndent)))
-  context("when AllowIfMethodIsEmpty is enabled", proc (): void =
-    let("cop_config", proc (): void =
+  context("when AllowIfMethodIsEmpty is enabled", proc () =
+    let("cop_config", proc (): Table[string, bool] =
       {"AllowIfMethodIsEmpty": true}.newTable())
     test "accepts a single-line empty method":
       expectNoOffenses("""        def no_op; end

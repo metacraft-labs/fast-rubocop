@@ -38,6 +38,12 @@ Style/BeginBlock:
   Enabled: false
   VersionAdded: '0.9'
 
+Style/Send:
+  Description: 'Prefer `Object#__send__` or `Object#public_send` to `send`, as `send` may overlap with existing methods.'
+  StyleGuide: '#prefer-public-send'
+  Enabled: false
+  VersionAdded: '0.33'
+
 ## Naming
 
 Naming/VariableName:

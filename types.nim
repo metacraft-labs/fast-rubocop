@@ -48,7 +48,7 @@ type
     endCol*: int
 
     node*: Node
-  RNodeKind* = enum RbBegin, RbLvasgn, RbInt, RbDef, RbArgs, RbSymbol, RbClass, RbSend, RbNil, RbSym, RbConst, RbStr, RbArg, RbLvar, RbIvar, RbKwoptarg, RbOrAsgn, RbIvasgn, RbModule, RbArray, RbAnd, RbOr, RbIf, RbRegexp, RbReturn, RbBlockPass, RbErange, RbBlock, RbPair, RbHash, RbTrue, RbGvar, RbRescue, RbFalse, RbAlias, RbRestarg, RbKwbegin, RbCase, RbWhen, RbZsuper, RbSplat, RbOptarg, RbSelf, RbPreexe, RbWhile
+  RNodeKind* = enum RbBegin, RbLvasgn, RbInt, RbDef, RbArgs, RbSymbol, RbClass, RbSend, RbNil, RbSym, RbConst, RbStr, RbArg, RbLvar, RbIvar, RbKwoptarg, RbOrAsgn, RbIvasgn, RbModule, RbArray, RbAnd, RbOr, RbIf, RbRegexp, RbReturn, RbBlockPass, RbErange, RbBlock, RbPair, RbHash, RbTrue, RbGvar, RbRescue, RbFalse, RbAlias, RbRestarg, RbKwbegin, RbCase, RbWhen, RbZsuper, RbSplat, RbOptarg, RbSelf, RbPreexe, RbWhile, RbCsend
   RNode* = ref object
     case kind: RNodeKind:
     of RbInt:
@@ -488,7 +488,7 @@ var targetRubyVersion* = 2.5
 
 type
   NodeHandler* = proc(cop: Cop, node: Node)
-const kinds = @["send", "lvasgn", "const", "cvasgn"]
+const kinds = @["send", "lvasgn", "const", "cvasgn", "csend"]
 
 macro initHandlers: untyped =
   result = nnkStmtList.newTree()
@@ -619,6 +619,7 @@ proc keyword*(position: Position): Position =
   let keyword = KEYWORD_MAPPING[kind]
   result.endLine = result.line
   result.endCol = result.col + keyword.len
+
 
 template methodName*(node: RNode): string =
   var res = node[0]
@@ -790,6 +791,9 @@ template isLvarType*(node: RNode): bool =
 
 template isSymType*(node: RNode): bool =
   node.kind == RbSym
+
+template isCsendType*(node: RNode): bool =
+  node.kind == RbCsend
 
 template isSendType*(node: RNode): bool =
   node.kind == RbSend
@@ -1016,6 +1020,9 @@ macro saveCop*(cop: untyped, functions: varargs[untyped]): untyped =
       handlers[cstring(`b1`)].add(((NodeHandler)`label`, (Cop)`cop`(), "Style/" & `b2`))
     result.add(b)
   echo result.repr
+
+template isSingleLine*(node: Node): bool =
+  node.loc.endLine - node.loc.line + 1 == 1
 
 export strformat, sequtils, strutils, node_pattern, tables
 

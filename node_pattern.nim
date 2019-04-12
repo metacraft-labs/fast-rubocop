@@ -187,7 +187,9 @@ proc tokenize(text: string): seq[string] =
   result = @[]
   var inLabel = false
   var token = ""
-  for i, c in text:
+  var i = 0
+  while i < text.len:
+    var c = text[i]
     if inLabel:
       if c.isAlphaNumeric or c in {'=', '+', '-', '*', '/', '_', '?'}:
         token.add(c)
@@ -201,10 +203,16 @@ proc tokenize(text: string): seq[string] =
       if c.isAlphaNumeric or c == ':' or c == '#':
         token = $c
         inLabel = true
+      elif c == '.' and i < text.len - 2 and text[i .. i + 1] == "..":
+        result.add("...")
+        token = ""
+        inLabel = false
+        i += 2
       elif c != ' ':
         result.add($c)
         token = ""
         inLabel = false
+    i += 1
   echo result
 
 proc generateMatch(text: string, root: string): NimNode =
@@ -235,9 +243,13 @@ proc compileSeq(compiler, node; head: bool): NimNode =
   var index = -1
   var terms: seq[NimNode] = @[]
   var size = 0
+
   while compiler.tokens.len > 0 and compiler.tokens[0] != ")":
     #let token = compiler.tokens[0]
     #compiler.tokens = compiler.tokens[1 .. ^1]
+    if compilet.tokens[0] == "...":
+      echo "SIZE"
+
     if index == -1:
       terms.add(compileExpr(compiler, temp, true))
       index = 0
@@ -415,7 +427,7 @@ proc compileExpr(compiler: Compiler, node: NimNode, head: bool): NimNode =
   elif token == "!": result = compileNegation(compiler, node, head)
   elif token == "$": result = compileCapture(compiler, node, head)
   elif token == "^": result = compileAscend(compiler, node, head)
-  # elif token == "_": result = quote do: true
+  elif token == "...": result = ident("true")
   elif token.isWildcard():  result = compileWildcard(compiler, node, token[1..^1], head)
   elif token.isFuncall():   result = compileFuncall(compiler, node, token, head)
   elif token.isNumber():   result = compileNumber(compiler, node, token.parseInt(), head)

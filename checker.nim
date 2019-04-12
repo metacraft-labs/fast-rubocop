@@ -1,4 +1,4 @@
-import cops/style/[case_equality, begin_block], cops/naming/[variable_name], cops/metrics/[method_length], cops/lint/[boolean_symbol, circular_argument_reference, disjunctive_assignment_in_constructor], types, tables, os, strutils, yaml.serialization, streams, options, osproc, bench
+import cops/style/[case_equality, begin_block, send], cops/naming/[variable_name], cops/metrics/[method_length], cops/lint/[boolean_symbol, circular_argument_reference, disjunctive_assignment_in_constructor], types, tables, os, strutils, yaml.serialization, streams, options, osproc, bench
 
 setDefaultValue(CopConfig, RubyInterpreters, @[])
 setDefaultValue(CopConfig, `Include`, @[])
