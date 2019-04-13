@@ -44,6 +44,7 @@ Style/Send:
   Enabled: false
   VersionAdded: '0.33'
 
+
 ## Naming
 
 Naming/VariableName:
@@ -87,3 +88,18 @@ Naming/AccessorMethodName:
   Enabled: true
   VersionAdded: '0.50'
 
+Style/MethodCallWithArgsParentheses:
+  Description: 'Use parentheses for method calls with arguments.'
+  StyleGuide: '#method-invocation-parens'
+  Enabled: false
+  VersionAdded: '0.47'
+  VersionChanged: '0.61'
+  IgnoreMacros: true
+  IgnoredMethods: []
+  AllowParenthesesInMultilineCall: false
+  AllowParenthesesInChaining: false
+  AllowParenthesesInCamelCaseMethod: false
+  EnforcedStyle: require_parentheses
+  SupportedStyles:
+    - require_parentheses
+    - omit_parentheses

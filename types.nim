@@ -29,6 +29,12 @@ type
     CountComments*: bool
     Max*: int
     Severity*: Severity
+    IgnoreMacros*: bool
+    IgnoredMethods*: seq[string]
+    AllowParenthesesInMultilineCall*: bool
+    AllowParenthesesInChaining*: bool
+    AllowParenthesesInCamelCaseMethod*: bool
+  
 
   Symbol* = string
 
@@ -48,6 +54,11 @@ type
     endCol*: int
 
     node*: Node
+
+  Range* = ref object
+    start*: (int, int)
+    length*: int
+
   RNodeKind* = enum RbBegin, RbLvasgn, RbInt, RbDef, RbArgs, RbSymbol, RbClass, RbSend, RbNil, RbSym, RbConst, RbStr, RbArg, RbLvar, RbIvar, RbKwoptarg, RbOrAsgn, RbIvasgn, RbModule, RbArray, RbAnd, RbOr, RbIf, RbRegexp, RbReturn, RbBlockPass, RbErange, RbBlock, RbPair, RbHash, RbTrue, RbGvar, RbRescue, RbFalse, RbAlias, RbRestarg, RbKwbegin, RbCase, RbWhen, RbZsuper, RbSplat, RbOptarg, RbSelf, RbPreexe, RbWhile, RbCsend
   RNode* = ref object
     case kind: RNodeKind:
@@ -84,7 +95,12 @@ setDefaultValue(CopConfig, VersionChanged, "")
 setDefaultValue(CopConfig, CountComments, false)
 setDefaultValue(CopConfig, Max, 0)
 setDefaultValue(CopConfig, Severity, severity_none)
-
+setDefaultValue(CopConfig, IgnoreMacros, false)
+setDefaultValue(CopConfig, IgnoredMethods, @[])
+setDefaultValue(CopConfig, AllowParenthesesInMultilineCall, false)
+setDefaultValue(CopConfig, AllowParenthesesInChaining, false)
+setDefaultValue(CopConfig, AllowParenthesesInCamelCaseMethod, false)
+  
 # FAITH
 var config*: Config = initTable[string, CopConfig]()
 #var cop_config* = config
@@ -620,6 +636,14 @@ proc keyword*(position: Position): Position =
   result.endLine = result.line
   result.endCol = result.col + keyword.len
 
+proc expression*(position:  Position): Position =
+  position
+
+proc begin*(position: Position): Range =
+  Range(start: (position.line, position.col), length: 1)
+
+proc endLoc*(position: Position): Range =
+  Range(start: (position.endLine, position.endCol), length: 1)
 
 template methodName*(node: RNode): string =
   var res = node[0]
@@ -870,8 +894,12 @@ macro addOffense*(node: Node, location: untyped = nil, message: string = "", sev
       var pos {.inject.} = `node`.loc
     result.add(p)
   else:
-    var p = quote:
-      var pos {.inject.} = `node`.loc.`location`
+    var p: NimNode
+    if location.kind == nnkIdent:
+      p = quote:
+        var pos {.inject.} = `node`.loc.`location`
+    else: # expr
+       p = location
     result.add(p)
   if sev.kind == nnkNilLit:
     var t = quote:
@@ -1024,5 +1052,20 @@ macro saveCop*(cop: untyped, functions: varargs[untyped]): untyped =
 template isSingleLine*(node: Node): bool =
   node.loc.endLine - node.loc.line + 1 == 1
 
+# proc eachDescendant(node: Node, types: seq[string]): seq[Node] =
+#   result = @[]
+#   if node.typ in types:
+#     result.add(node)
+#   for child in node.children:
+#     result = result.concat(..)
+      
+template aliasNode*(name: untyped, original: untyped): untyped =
+  method `name`(self; node) =
+    self.`original`(node)
+        
+template style*(cop: Cop): string =
+  config[cop_name()].EnforcedStyle
+
 export strformat, sequtils, strutils, node_pattern, tables
+
 

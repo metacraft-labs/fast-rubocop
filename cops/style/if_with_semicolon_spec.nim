@@ -1,5 +1,8 @@
 
 import
+  types
+
+import
   if_with_semicolon, test_tools
 
 suite "IfWithSemicolon":

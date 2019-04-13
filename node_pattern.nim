@@ -242,26 +242,26 @@ proc compileSeq(compiler, node; head: bool): NimNode =
     let `temp` = `node`; true
   var index = -1
   var terms: seq[NimNode] = @[]
-  var size = 0
+  var size = (0, false)
 
   while compiler.tokens.len > 0 and compiler.tokens[0] != ")":
-    #let token = compiler.tokens[0]
-    #compiler.tokens = compiler.tokens[1 .. ^1]
-    if compilet.tokens[0] == "...":
-      echo "SIZE"
-
+    if compiler.tokens[0] == "...":
+      size[1] = true
     if index == -1:
       terms.add(compileExpr(compiler, temp, true))
       index = 0
     else:
       let childNode = quote do: `temp`[`index`]
       terms.add(compileExpr(compiler, childNode, false))
-      size += 1
+      size[0] += 1
       index += 1
   if compiler.tokens.len > 0:
     compiler.tokens = compiler.tokens[1 .. ^1]
-  let sizeNode = newLit(size)
-  terms = @[quote do: `temp`.len == `sizeNode`].concat(terms)
+  let sizeNode = newLit(size[0])
+  if not size[1]:
+    terms = @[quote do: `temp`.len == `sizeNode`].concat(terms)
+  else:
+    terms = @[quote do: `temp`.len >= `sizeNode`].concat(terms)
 
   for term in terms:
     result = quote do: `result` and `term`

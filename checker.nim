@@ -18,6 +18,11 @@ setDefaultValue(CopConfig, VersionChanged, "")
 setDefaultValue(CopConfig, CountComments, false)
 setDefaultValue(CopConfig, Max, 0)
 setDefaultValue(CopConfig, Severity, severity_none)
+setDefaultValue(CopConfig, IgnoreMacros, false)
+setDefaultValue(CopConfig, IgnoredMethods, @[])
+setDefaultValue(CopConfig, AllowParenthesesInMultilineCall, false)
+setDefaultValue(CopConfig, AllowParenthesesInChaining, false)
+setDefaultValue(CopConfig, AllowParenthesesInCamelCaseMethod, false)
 
 proc startCops(path: string) =
   load(newFileStream(path), config)

@@ -1,5 +1,8 @@
 
 import
+  types
+
+import
   symbol_literal, test_tools
 
 suite "SymbolLiteral":

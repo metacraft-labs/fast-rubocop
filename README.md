@@ -89,6 +89,8 @@ cop CircularArgumentReference:
     addOffense(argValue, message = format(MSG, argName = argName))
 ```
 
+cops are in `cops` subdirectories: `cops/unfinished` contains unfinished translations. they can be used if you want to manually port the project and a lot of their syntax should be translated well but they are not ready to be translated fully automatically.
+
 ## Performance
 
 We target 5-10x performance increase.
