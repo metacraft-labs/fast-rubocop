@@ -27,7 +27,6 @@ cop :
   const
     MSG = "Use %<style>s for method names."
   method onDef*(self: MethodName; node: Node): void =
-    echo "def"
     if node.isOperatorMethod():
       return
     self.checkName(node, node.methodName, node.loc.name)

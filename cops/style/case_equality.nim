@@ -16,9 +16,11 @@ cop CaseEquality:
   ##    (1..100).include?(7)
   ##    some_string =~ /something/
   ## 
+  
   const
     MSG = "Avoid the use of the case equality operator `===`."
   nodeMatcher isCaseEquality, "(send _ :=== _)"
+  
   method onSend*(self; node) =
     isCaseEquality node:
       addOffense(node, location = selector)
