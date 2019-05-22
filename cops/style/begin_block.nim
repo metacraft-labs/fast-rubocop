@@ -10,8 +10,10 @@ cop BeginBlock:
   ##    # bad
   ##    BEGIN { test }
   ## 
+  
   const
     MSG = "Avoid the use of `BEGIN` blocks."
+  
   method onPreexe*(self; node) =
     addOffense(node, location = keyword)
 

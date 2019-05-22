@@ -22,8 +22,10 @@ cop VariableName:
   ## 
   ##    # good
   ##    fooBar = 1
+  
   const
     MSG = "Use %<style>s for variable names."
+  
   method onLvasgn*(self; node) =
     var name = node[0]
     if not name:

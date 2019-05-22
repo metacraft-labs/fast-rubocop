@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title>reveal-md</title>
+    <link rel="stylesheet" href="./css/reveal.css" />
+    <link rel="stylesheet" href="./css/theme/black.css" id="theme" />
+    <link rel="stylesheet" href="./css/highlight/zenburn.css" />
+    <link rel="stylesheet" href="./css/print/paper.css" type="text/css" media="print" />
+
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template">
+## Hello, Ruby Kaigi 2019
+</script></section><section  data-markdown><script type="text/template">
+## Who are we?
+</script></section><section  data-markdown><script type="text/template">
+## Zahary
+</script></section><section  data-markdown><script type="text/template">
+### I started as a game engine developer
+</script></section><section  data-markdown><script type="text/template">
+### This meant I had to write in C++, but I dreamed for writing Ruby instead.
+</script></section><section  data-markdown><script type="text/template">
+### So, I set out to create a new language - Nim
+</script></section><section  data-markdown><script type="text/template">
+### A *simple* goal: slick as Ruby, fast as C++
+</script></section><section  data-markdown><script type="text/template">
+## Alexander
+</script></section><section  data-markdown><script type="text/template">
+### I love language design, I work on developer tools in Nim and I am a former Ruby/Python web developer
+</script></section><section  data-markdown><script type="text/template">
+## Bulgaria
+</script></section><section  data-markdown><script type="text/template">
+### People from Bulgaria usually show photos of Sofia on RubyKaigi
+</script></section><section  data-markdown><script type="text/template">
+## We'll show you Plovdiv!
+
+![Plovdiv](_site/files/plovdiv.jpg)
+</script></section><section  data-markdown><script type="text/template">
+### It's fun, it's ailiak (a unique version of chill) and it's a cultural capital of europe in 2019. Come and visit!
+</script></section><section  data-markdown><script type="text/template">
+## Bulgaria has many good things going for it
+</script></section><section  data-markdown><script type="text/template">
+## One of the first Christian countries in Eastern Europe
+
+![Baptism Preslav](_site/files/Baptism_Preslav.jpg)
+</script></section><section  data-markdown><script type="text/template">
+## Bulgarian country 1.0: we came from Asia! on horses!
+</script></section><section  data-markdown><script type="text/template">
+## Bulgarian empire 2.0
+</script></section><section  data-markdown><script type="text/template">
+## Fight for freedom
+</script></section><section  data-markdown><script type="text/template">
+## 山沢静吾
+
+![seigo_yamazawa](_site/files/seigo_yamazawa.jpg)
+
+You've sent a Samurai to fight in our liberation war. Thank you!
+</script></section><section  data-markdown><script type="text/template">
+## Modern Bulgaria 3.0
+
+Imagine the changelog
+</script></section><section  data-markdown><script type="text/template">
+## Communism patch, a lot of crashes
+</script></section><section  data-markdown><script type="text/template">
+## Modern Bulgaria 3.5
+</script></section><section  data-markdown><script type="text/template">
+## And now we're back to Asia
+
+\* For RubyKaigi
+</script></section><section  data-markdown><script type="text/template">
+## So, why would you translate a dynamic language to a statically typed one?
+</script></section><section  data-markdown><script type="text/template">
+### You have a big existing project with many users - Yay!
+</script></section><section  data-markdown><script type="text/template">
+### ... but now you are hitting a performance wall.
+</script></section><section  data-markdown><script type="text/template">
+### You want to express an algorithm once and generate code for it in many languages.
+</script></section><section  data-markdown><script type="text/template">
+### You want to do your rapid prototyping in a dynamic language, but you maintain an optimized translated version as well.
+</script></section><section  data-markdown><script type="text/template">
+## It all started with pseudo
+
+https://github.com/pseudo-lang/pseudo
+
+<aside class="notes"><p>short description of the project</p>
+</aside></script></section><section  data-markdown><script type="text/template">
+### Subset of python/ruby, targetting c#/go/ruby/python/javascript
+</script></section><section  data-markdown><script type="text/template">
+### Language-independent standard library
+</script></section><section  data-markdown><script type="text/template">
+## py2nim
+
+[py2nim](https://github.com/metacraft-labs/py2nim_deprecated)
+</script></section><section  data-markdown><script type="text/template">
+### Used by Status.im to translate py-evm for the Nimbus project
+
+https://github.com/status-im/Nimbus
+</script></section><section  data-markdown><script type="text/template">
+## Some key differences:
+
+* static analysis vs run-time analysis
+* targetting the least common denominator vs targetting the full language
+</script></section><section  data-markdown><script type="text/template">
+## Introducing ruby2nim
+
+https://github.com/metacraft-labs/ruby2nim
+</script></section><section  data-markdown><script type="text/template">
+### Why ruby?
+</script></section><section  data-markdown><script type="text/template">
+### Ruby is awesome!
+</script></section><section  data-markdown><script type="text/template">
+### ... but it's also a challenge to translate due to the wide-spread use of DSLs
+</script></section><section  data-markdown><script type="text/template">
+### Why nim?
+</script></section><section  data-markdown><script type="text/template">
+### Nim is really fast. C/C++ fast!
+</script></section><section  data-markdown><script type="text/template">
+### It has a GC, so the semantics of Ruby are easy to recreate.
+</script></section><section  data-markdown><script type="text/template">
+### It has great meta-programming capabilities, so the expressivity of Ruby can be imitated.
+</script></section><section  data-markdown><script type="text/template">
+## Some examples
+</script></section><section  data-markdown><script type="text/template">
+Idiomatic Ruby:
+
+```ruby
+2.times do |a|
+  puts a
+end
+```
+</script></section><section  data-markdown><script type="text/template">
+Nim translation:
+
+```nim
+2.times do (a: int):
+  echo a
+```
+</script></section><section  data-markdown><script type="text/template">
+Ruby's Sinatra:
+
+```ruby
+get "e/:id":
+  render json: {res: User.find(params[:id])}
+```
+</script></section><section  data-markdown><script type="text/template">
+Nim's Jester:
+
+```nim
+get "e/:id@int":
+  render %* {res: User.find(params.id)}
+```
+</script></section><section  data-markdown><script type="text/template">
+Ruby's Markaby:
+
+```ruby
+mab = Markaby::Builder.new
+mab.html do
+  head { title "Boats.com" }
+  body do
+    h1 "Boats.com has great deals"
+    ul do
+      li "$49 for a canoe"
+      li "$39 for a raft"
+      li "$29 for a huge boot that floats and can fit 5 people"
+    end
+  end
+end
+puts mab.to_s
+```
+</script></section><section  data-markdown><script type="text/template">
+Nim's Karax:
+
+```nim
+var html = buildHtml:
+  head(title = "Boats.com")
+  body:
+    h1 "Boats.com has great deals"
+    ul:
+      li "$49 for a canoe"
+      li "$39 for a raft"
+      li "$29 for a huge boot that floats and can fit 5 people"
+
+echo html
+```
+</script></section><section  data-markdown><script type="text/template">
+Nim's macros make all of this possible
+
+<aside class="notes"><ul>
+<li>Nim&#39;s macros are like the ones in Lisp.</li>
+<li>A macro receives a block of code as input and translates it to another block of code at compile-time.</li>
+<li>The possibilities are endless.</li>
+</ul>
+</aside></script></section><section  data-markdown><script type="text/template">
+### Languist is our shared platform behind ruby2nim and py2nim
+
+https://github.com/metacraft-labs/languist
+</script></section><section  data-markdown><script type="text/template">
+## Type inference through program execution tracing
+</script></section><section  data-markdown><script type="text/template">
+### ruby-deduckt: our tool for instrumenting Ruby programs 
+
+https://github.com/metacraft-labs/ruby-deduckt
+(based on the Tracepoint API)
+</script></section><section  data-markdown><script type="text/template">
+### It can act as a drop-in replacement for Ruby or it can be used as a library to trace only certain files
+</script></section><section  data-markdown><script type="text/template">
+### Executing a Ruby program produces a database containing the AST of all loaded files with attached type annotations
+</script></section><section  data-markdown><script type="text/template">
+### Besides ruby2nim, we can imagine some other uses:
+
+* Language servers
+
+* Code indexing engines
+</script></section><section  data-markdown><script type="text/template">
+### Code coverage is important!
+
+We hope you have a test suite :)
+</script></section><section  data-markdown><script type="text/template">
+Hey, we almost tricked you that all of this is easy!
+
+<aside class="notes"><p>=&gt; Alexander</p>
+</aside></script></section><section  data-markdown><script type="text/template">
+### Mock types can be tricky
+</script></section><section  data-markdown><script type="text/template">
+### Solution: source annotations and project-specific configuration files.
+</script></section><section  data-markdown><script type="text/template">
+```ruby
+#l ignore
+#l a: Int
+```</script></section><section  data-markdown><script type="text/template">
+### Duck typing is used for real sometimes (surprisingly rarely)
+</script></section><section  data-markdown><script type="text/template">
+### Solution: Gather statistics. Apply heuristics for choosing between variant types and generic functions
+</script></section><section  data-markdown><script type="text/template">
+### Or just give up and leave it to the user to solve the problem - certain APIs may be replaced with custom code.
+</script></section><section  data-markdown><script type="text/template">
+## Idiomatic code is preferred to an emulated run-time
+
+<aside class="notes"><p>important: why just not generating calls to runtime</p>
+</aside></script></section><section  data-markdown><script type="text/template">
+## Still, sometimes its impossible to autogenerate a correct equivalent for very dynamic code
+
+<aside class="notes"><p>=&gt; Zahary</p>
+</aside></script></section><section  data-markdown><script type="text/template">
+## So, how does a typical translation project look like?
+</script></section><section  data-markdown><script type="text/template">
+### Branching model with two repositories:
+
+* The original source project with a custom branch for annotations
+* The new translated project
+</script></section><section  data-markdown><script type="text/template">
+### The annotations branch is rebased every time you sync with the upstream
+</script></section><section  data-markdown><script type="text/template">
+### The translated project can feature a branch for manually created patches that should be applied (merged) after each translation
+</script></section><section  data-markdown><script type="text/template">
+### Ideally, the translation doesn't need any manual work, but some users may be happy with a one-off translation
+</script></section><section  data-markdown><script type="text/template">
+### Large parts of the original project may be re-implemented manually or mapped to existing alternatives
+</script></section><section  data-markdown><script type="text/template">
+### Custom rewrites solve this problem:
+
+```nim
+rewrite do (x: String, y: String):
+  x + y
+do -> String:
+  x & y
+```
+
+<aside class="notes"><p>=&gt; Alexander</p>
+</aside></script></section><section  data-markdown><script type="text/template">
+### AST translation is not enough
+</script></section><section  data-markdown><script type="text/template">
+### Translation of idioms
+
+<aside class="notes"><p>higher level meaning</p>
+</aside></script></section><section  data-markdown><script type="text/template">
+### ? rewrite system
+
+credits / inspirations :
+
+* [stratego/xt](http://releases.strategoxt.org/strategoxt-manual/unstable/manual/chunk-book/tutorial.html#stratego-rewriting-strategies)
+* [Paul Klint's "Quick Introduction to Term Rewriting"](http://www.meta-environment.org/doc/books/extraction-transformation/term-rewriting/term-rewriting.html)
+</script></section><section  data-markdown><script type="text/template">
+### ? rewrites express rules for idioms
+</script></section><section  data-markdown><script type="text/template">
+### ? idioms represent idiomatic patterns
+</script></section><section  data-markdown><script type="text/template">
+### interlang standard library
+
+![dog](_site/files/dog_core.jpeg)
+</script></section><section  data-markdown><script type="text/template">
+### ? rewrites and custom rewriters
+</script></section><section  data-markdown><script type="text/template">
+### input target project rewrite stages
+</script></section><section  data-markdown><script type="text/template">
+### maybe the most flexible part of the pipeline: can tweak almost any aspect of the translation 
+</script></section><section  data-markdown><script type="text/template">
+### custom rewriters: full pass
+</script></section><section  data-markdown><script type="text/template">
+### generator
+</script></section><section  data-markdown><script type="text/template">
+### code generator dsl: easy to add code generator support for new target language
+</script></section><section  data-markdown><script type="text/template">
+### needs rewrites too
+</script></section><section  data-markdown><script type="text/template">
+### analyzing types and type inference in languist
+</script></section><section  data-markdown><script type="text/template">
+### The approach shines in projects that are heavily based on frameworks, DSLs & 3rd party libraries
+</script></section><section  data-markdown><script type="text/template">
+### It's easy to set boundaries between the translated and the replaced components
+</script></section><section  data-markdown><script type="text/template">
+### It's possible to translate only the business logic
+</script></section><section  data-markdown><script type="text/template">
+### We needed an initial real world project to test this hypothesis
+</script></section><section  data-markdown><script type="text/template">
+## Presenting fast-rubocop
+
+https://github.com/metacraft-labs/fast-rubocop
+</script></section><section  data-markdown><script type="text/template">
+### Drop-in replacement for rubocop
+</script></section><section  data-markdown><script type="text/template">
+### Clean idiomatic translation to Nim
+
+![translating to nim](_site/files/code.png)</script></section><section  data-markdown><script type="text/template">
+### Results so far: 
+
+* only few cops fully translated (but adding new ones requires little work)
+
+* Between 2x and 11x speedup (compared to `rubocop --cache false`)
+</script></section><section  data-markdown><script type="text/template">
+### Benchmark results:
+
+project | rubocop|fast-rubocop | speedup
+--------|--------|------------
+single file (line_length.rb) | 49ms | 19ms  | 2.5x
+small project (metrics, 11 files) | 94 ms | 29 ms | 3x
+large project (rubocop, 1187 files) | 16.540 s | 1.396 s | 11x
+</script></section><section  data-markdown><script type="text/template">
+### We ran into few issues ..
+</script></section><section  data-markdown><script type="text/template">
+### Should we translating `parser`?
+</script></section><section  data-markdown><script type="text/template">
+### No, let's map its usage to treesitter
+</script></section><section  data-markdown><script type="text/template">
+### But still, the resulting ASTs differ 
+</script></section><section  data-markdown><script type="text/template">
+### Solution: a convertion layer that smooths out the differences
+</script></section><section  data-markdown><script type="text/template">
+### node_pattern.rb
+</script></section><section  data-markdown><script type="text/template">
+### Easy to map the dsl to nim compile time macros
+</script></section><section  data-markdown><script type="text/template">
+### We got away this time
+</script></section><section  data-markdown><script type="text/template">
+### Ruby's `:symbols` are tricky
+</script></section><section  data-markdown><script type="text/template">
+### Should we map them to string?
+</script></section><section  data-markdown><script type="text/template">
+### Perhaps to enum?
+</script></section><section  data-markdown><script type="text/template">
+### Map them to different enums? hard
+</script></section><section  data-markdown><script type="text/template">
+### Type inference for enums
+</script></section><section  data-markdown><script type="text/template">
+### Type inference combined with dynamic info
+</script></section><section  data-markdown><script type="text/template">
+### What stops us from translating more cops?
+
+* treesitter to parser AST conversion still not perfect
+* languist still needs to learn about more Ruby features
+* also we need to write down more stdlib/rubocop rewrite rules
+* no showstoppers - all of these mostly a matter of time
+
+<aside class="notes"><p>=&gt; Zahary</p>
+</aside></script></section><section  data-markdown><script type="text/template">
+## The future of the project
+</script></section><section  data-markdown><script type="text/template">
+### A lot of possibilities ...
+</script></section><section  data-markdown><script type="text/template">
+### Support for more target languages: Java, C#, Go, Crystal
+</script></section><section  data-markdown><script type="text/template">
+### C++, Rust: experimental/research
+</script></section><section  data-markdown><script type="text/template">
+### What should we translate next?
+
+Please give us ideas for projects that can benefit from improved performance.
+</script></section><section  data-markdown><script type="text/template">
+### Translating projects still requires a lot of time, but crowd-funding campaigns may be a good model for funding such work.
+</script></section><section  data-markdown><script type="text/template">
+## End
+</script></section><section  data-markdown><script type="text/template">
+### Credits: cant find sources for the gifs: credit to their creators (pictures are from wikipedia/random meme)
+</script></section><section  data-markdown><script type="text/template">
+### Credits to the rubocop contributors
+</script></section><section  data-markdown><script type="text/template">
+### Credits to 
+
+* treesitter
+* [genotrance](https://github.com/genotrance) for nimterop and the tree-sitter nim wrappers (and [timotheecour](https://github.com/timotheecour) as a contributor)
+</script></section></div>
+    </div>
+
+    <script src="./lib/js/head.min.js"></script>
+    <script src="./js/reveal.js"></script>
+
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+      // Optional libraries used to extend on reveal.js
+      var deps = [
+        { src: './lib/js/classList.js', condition: function() { return !document.body.classList; } },
+        { src: './plugin/markdown/marked.js', condition: function() { return !!document.querySelector('[data-markdown]'); } },
+        { src: './plugin/markdown/markdown.js', condition: function() { return !!document.querySelector('[data-markdown]'); } },
+        { src: './plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+        { src: './plugin/zoom-js/zoom.js', async: true },
+        { src: './plugin/notes/notes.js', async: true },
+        { src: './plugin/math/math.js', async: true }
+      ];
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        dependencies: deps
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal.getQueryHash() || {};
+
+      var options = extend(defaultOptions, {"showNotes":false,"transition":"none"}, queryOptions);
+    </script>
+
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+</html>
